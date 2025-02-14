@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Infinite Tunnel Rush</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #score { position: absolute; top: 20px; left: 20px; font-size: 24px; color: white; }
+    </style>
+</head>
+<body>
+    <div id="score">High Score: 0 <br>Score: 0</div>
+    <script type="importmap">
+        {
+            "imports": {
+                "three":   "https://cdn.jsdelivr.net/npm/three/+esm",
+                "jsm/": "https://cdn.jsdelivr.net/npm/three/examples/jsm/"
+            }
+        }
+    </script>
+    <script src=""></script>
+    <script src="./global.js"></script>
+    <script src="./settings.js"></script>
+    <script src="./events.js"></script>
+    <script type="module" src="./game.js"></script>
+    <script src="./post_processing.js"></script>
+</body>
+</html>
