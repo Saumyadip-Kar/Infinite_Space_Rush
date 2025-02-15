@@ -17,6 +17,8 @@ var keymaps = {
 
 var objects = {
     obstacles:{
+        spawn_distance: -100,
+        spawn_range: 5,
     }
 }
 

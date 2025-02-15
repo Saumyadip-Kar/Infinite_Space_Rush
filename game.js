@@ -67,7 +67,7 @@ function init() {
 
 function animate() {
     requestAnimationFrame(animate);
-
+    //if(paused) return;
     // Move tunnel backward
     tunnel.position.z += difficulty[current_difficulty].speed;;
     if (tunnel.position.z > 5) tunnel.position.z = -25;
@@ -80,7 +80,7 @@ function animate() {
             console.log("Collision detected! Game Over.");
             if(score>high_score) high_score = score, saveHighScore(high_score);
             //alert("Game Over! Score: " + score);
-            
+            //showGameOverScreen();
             window.location.reload(); // Restart the game
         }
 
@@ -113,9 +113,9 @@ function checkCollision(obj1, obj2) {
 
 function spawnObstacle() {
     let obsGeo = new THREE.BoxGeometry(1, 1, 1);
-    let obsMat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    let obsMat = new THREE.MeshBasicMaterial({ color: getRandomColor() });
     let obs = new THREE.Mesh(obsGeo, obsMat);
-    obs.position.set(Math.random() * 6 - 3, Math.random() * 4 - 2, -15);
+    obs.position.set(Math.random() * 8 - 4, Math.random() * 6 - 3, objects.obstacles.spawn_distance);
     scene.add(obs);
     obstacles.push(obs);
 }
@@ -123,8 +123,49 @@ function spawnObstacle() {
 init();
 
 
+function getRandomColor() {
+    return colors[Math.floor(Math.random() * colors.length)];
+}
 
 
+
+//Actually there is some problem in this function
+function showGameOverScreen() {
+    // Create a semi-transparent black background overlay
+    let gameOverOverlay = document.createElement("div");
+    gameOverOverlay.style.position = "fixed";
+    gameOverOverlay.style.top = "0";
+    gameOverOverlay.style.left = "0";
+    gameOverOverlay.style.width = "100%";
+    gameOverOverlay.style.height = "100%";
+    gameOverOverlay.style.backgroundColor = "rgba(0, 0, 0, 0)";
+    gameOverOverlay.style.display = "flex";
+    gameOverOverlay.style.justifyContent = "center";
+    gameOverOverlay.style.alignItems = "center";
+    gameOverOverlay.style.flexDirection = "column";
+    gameOverOverlay.style.color = "white";
+    gameOverOverlay.style.fontSize = "50px";
+    gameOverOverlay.style.fontFamily = "Arial, sans-serif";
+    gameOverOverlay.style.textAlign = "center";
+    gameOverOverlay.innerHTML = `
+        <div>GAME OVER</div>
+        <div style="font-size: 24px; margin-top: 20px;">Your Score: ${score}</div>
+        <div style="font-size: 24px; margin-top: 20px;">High Score: ${high_score}</div>
+        <div style="font-size: 20px; margin-top: 20px;">Press any key to restart</div>
+    `;
+
+    document.body.appendChild(gameOverOverlay);
+
+    paused = true;
+    // Pause the game loop
+    //cancelAnimationFrame(animate);
+
+    // Restart the game on key press
+    document.addEventListener("keydown", function restartGame() {
+        document.removeEventListener("keydown", restartGame); // Remove event listener after restart
+        window.location.reload(); // Reload the page to restart the game
+    });
+}
 // var flameTrail;
 
 // // Create a particle system for the flame trail
