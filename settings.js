@@ -30,7 +30,7 @@ var difficulty = {
     },
     "intermediate": {
         obstacle_spawn_probability: 0.05,
-        speed: 0.2,
+        speed: 0.5,
     },
     "pro": {
         obstacle_spawn_probability: 0.10,

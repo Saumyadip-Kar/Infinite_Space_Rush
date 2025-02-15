@@ -52,6 +52,7 @@ function init() {
 
             // Add the player to the scene
             scene.add(player);
+            paused = false;
         });
     });
 
@@ -67,7 +68,7 @@ function init() {
 
 function animate() {
     requestAnimationFrame(animate);
-    //if(paused) return;
+    if(paused) return;
     // Move tunnel backward
     tunnel.position.z += difficulty[current_difficulty].speed;;
     if (tunnel.position.z > 5) tunnel.position.z = -25;
@@ -81,7 +82,8 @@ function animate() {
             if(score>high_score) high_score = score, saveHighScore(high_score);
             //alert("Game Over! Score: " + score);
             //showGameOverScreen();
-            window.location.reload(); // Restart the game
+            //window.location.reload(); // Restart the game
+            setTimeout(showGameOverScreen, 200); //Showing gameover screen after 200 ms otherwise there might be some jittering problem I am unable to detect
         }
 
         // Remove obstacles that move out of bounds
@@ -89,7 +91,7 @@ function animate() {
             scene.remove(obs);
             obstacles.splice(i, 1);
             score++;
-            document.getElementById("score").innerText = "High Score: " + high_score +"\nScore: " + score;
+            document.getElementById("score").innerText = "High Score: " + high_score +"\nScore: " + score; //Scalling because the spaceship is flat shaped, the box might contain a bigger collision area
         }
     });
 
@@ -104,11 +106,28 @@ function animate() {
 }
 
 
-function checkCollision(obj1, obj2) {
-    let box1 = new THREE.Box3().setFromObject(obj1);
-    let box2 = new THREE.Box3().setFromObject(obj2);
+function checkCollision(player, obs) {
+    let box1 = new THREE.Box3().setFromObject(player);
+    let box2 = new THREE.Box3().setFromObject(obs);
+    scaleBoundingBoxFlat(box1, 0.8, 0.3, 0.8); // Reduce height by 70%
     return box1.intersectsBox(box2);
 }
+
+function scaleBoundingBoxFlat(box, scaleX = 1, scaleY = 0.5, scaleZ = 1) {
+    let center = new THREE.Vector3();
+    box.getCenter(center);
+
+    let size = new THREE.Vector3();
+    box.getSize(size);
+
+    size.x *= scaleX; // Scale width
+    size.y *= scaleY; // Scale height (flattening effect)
+    size.z *= scaleZ; // Scale depth
+
+    box.min.copy(center).sub(size.clone().multiplyScalar(0.5));
+    box.max.copy(center).add(size.clone().multiplyScalar(0.5));
+}
+
 
 
 function spawnObstacle() {
@@ -138,7 +157,7 @@ function showGameOverScreen() {
     gameOverOverlay.style.left = "0";
     gameOverOverlay.style.width = "100%";
     gameOverOverlay.style.height = "100%";
-    gameOverOverlay.style.backgroundColor = "rgba(0, 0, 0, 0)";
+    gameOverOverlay.style.backgroundColor = "rgba(0, 0, 0, 1)";
     gameOverOverlay.style.display = "flex";
     gameOverOverlay.style.justifyContent = "center";
     gameOverOverlay.style.alignItems = "center";
